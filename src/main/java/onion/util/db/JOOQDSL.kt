@@ -9,7 +9,7 @@ import java.sql.Connection
 object JOOQDSL {
     private val threadConnection = ThreadLocal<Connection>()
     private val threadDsl = ThreadLocal<DSLContext>()
-    fun getCon(): Connection {
+    private fun getCon(): Connection {
         if (threadConnection.get() == null) {
             if (DButilsDataSource.getDatasource() == null) {
                 val con = getDataSource().connection
@@ -30,30 +30,30 @@ object JOOQDSL {
     }
 
     // 预编译方法
-    fun GetAutoDSL() = getDsl()
+    fun getAutoDSL() = getDsl()
 
     // 预编译方法
-    fun GetDSL(): DSLContext {
+    fun getDSL(): DSLContext {
         getCon().autoCommit = false
         return getDsl()
     }
 
     // 非预编译方法
-    fun GetAutoDSLNOPRE(): DSLContext {
+    fun getAutoDSLNOPRE(): DSLContext {
         val dsl = getDsl()
         dsl.settings().withStatementType(StatementType.STATIC_STATEMENT)
         return getDsl()
     }
 
     // 非预编译方法
-    fun GetDSLNOPRE(): DSLContext {
+    fun getDSLNOPRE(): DSLContext {
         getCon().autoCommit = false
         val dsl = getDsl()
         dsl.settings().withStatementType(StatementType.STATIC_STATEMENT)
         return getDsl()
     }
 
-    fun Rollback() {
+    fun rollback() {
         val conn = threadConnection.get()
         if (conn != null && !conn.isClosed && !conn.autoCommit) {
             conn.rollback()
@@ -64,7 +64,7 @@ object JOOQDSL {
         threadDsl.remove()
     }
 
-    fun Commit() {
+    fun commit() {
         val conn = threadConnection.get()
         if (conn != null && !conn.isClosed && !conn.autoCommit) {
             conn.commit()
